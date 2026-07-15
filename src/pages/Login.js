@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import AuthBrand from '../components/AuthBrand';
 import '../styles/Auth.css';
+
+const dashboardPathByRole = {
+  student: '/student/dashboard',
+  agent: '/agent/dashboard',
+  admin: '/admin/dashboard',
+};
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -10,6 +17,8 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirect = searchParams.get('redirect');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,13 +27,7 @@ export default function Login() {
 
     try {
       const user = await login(email, password);
-      if (user.role === 'student') {
-        navigate('/student/dashboard');
-      } else if (user.role === 'agent') {
-        navigate('/agent/dashboard');
-      } else if (user.role === 'admin') {
-        navigate('/admin/dashboard');
-      }
+      navigate(redirect || dashboardPathByRole[user.role] || '/');
     } catch (err) {
       setError(err);
     } finally {
@@ -35,7 +38,7 @@ export default function Login() {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <h1>Trip Booking System</h1>
+        <AuthBrand />
         <h2>Login</h2>
 
         {error && <div className="error-message">{error}</div>}
@@ -66,7 +69,10 @@ export default function Login() {
           </button>
         </form>
 
-        <p>Don't have an account? <Link to="/signup">Sign up</Link></p>
+        <p>
+          Don't have an account?{' '}
+          <Link to={redirect ? `/signup?redirect=${encodeURIComponent(redirect)}` : '/signup'}>Sign up</Link>
+        </p>
       </div>
     </div>
   );

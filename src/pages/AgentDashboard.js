@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import axiosInstance from '../api/axiosConfig';
+import DashboardBrand from '../components/DashboardBrand';
 import '../styles/Dashboard.css';
 
 export default function AgentDashboard() {
@@ -58,7 +59,7 @@ export default function AgentDashboard() {
   return (
     <div className="dashboard-container">
       <nav className="navbar">
-        <h1>Trip Booking System - Agent Portal</h1>
+        <DashboardBrand title="Agent Portal" />
         <div className="user-info">
           <span>Welcome, {user?.name}</span>
           <button onClick={logout} className="btn-logout">Logout</button>

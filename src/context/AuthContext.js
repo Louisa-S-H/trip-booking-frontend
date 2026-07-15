@@ -29,13 +29,12 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const signup = async (name, email, password, role = 'student') => {
+  const signup = async (name, email, password) => {
     try {
       const response = await axiosInstance.post('/auth/signup', {
         name,
         email,
         password,
-        role,
       });
       const { token, user } = response.data;
       localStorage.setItem('token', token);

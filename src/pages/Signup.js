@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import AuthBrand from '../components/AuthBrand';
 import '../styles/Auth.css';
 
 export default function Signup() {
@@ -8,12 +9,13 @@ export default function Signup() {
     name: '',
     email: '',
     password: '',
-    role: 'student',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { signup } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirect = searchParams.get('redirect');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -26,17 +28,8 @@ export default function Signup() {
     setLoading(true);
 
     try {
-      const user = await signup(
-        formData.name,
-        formData.email,
-        formData.password,
-        formData.role
-      );
-      if (user.role === 'student') {
-        navigate('/student/dashboard');
-      } else if (user.role === 'agent') {
-        navigate('/agent/dashboard');
-      }
+      await signup(formData.name, formData.email, formData.password);
+      navigate(redirect || '/student/dashboard');
     } catch (err) {
       setError(err);
     } finally {
@@ -47,8 +40,11 @@ export default function Signup() {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <h1>Trip Booking System</h1>
+        <AuthBrand />
         <h2>Sign Up</h2>
+        <p style={{ textAlign: 'center', color: '#666', marginBottom: '20px' }}>
+          Create a student account to book trips and services.
+        </p>
 
         {error && <div className="error-message">{error}</div>}
 
@@ -86,20 +82,15 @@ export default function Signup() {
             />
           </div>
 
-          <div className="form-group">
-            <label>Role</label>
-            <select name="role" value={formData.role} onChange={handleChange}>
-              <option value="student">Student</option>
-              <option value="agent">Agent</option>
-            </select>
-          </div>
-
           <button type="submit" disabled={loading}>
             {loading ? 'Creating account...' : 'Sign Up'}
           </button>
         </form>
 
-        <p>Already have an account? <Link to="/login">Login</Link></p>
+        <p>
+          Already have an account?{' '}
+          <Link to={redirect ? `/login?redirect=${encodeURIComponent(redirect)}` : '/login'}>Login</Link>
+        </p>
       </div>
     </div>
   );

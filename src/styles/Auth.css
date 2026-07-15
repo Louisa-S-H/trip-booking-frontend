@@ -16,10 +16,16 @@
   max-width: 400px;
 }
 
-.auth-card h1 {
-  color: #667eea;
+.auth-brand {
+  display: flex;
+  justify-content: center;
   margin-bottom: 10px;
-  text-align: center;
+}
+
+.auth-brand img {
+  width: 180px;
+  height: auto;
+  object-fit: contain;
 }
 
 .auth-card h2 {
